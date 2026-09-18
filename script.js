@@ -151,11 +151,9 @@ function initMagneticButtons(){
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
 
-      // Posisi gradient ripple
       btn.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
       btn.style.setProperty('--my', (e.clientY - rect.top) + 'px');
 
-      // Magnetic effect halus
       btn.style.transform = `translate(${x * 0.08}px, ${y * 0.08}px) translateY(-2px)`;
     });
 
@@ -163,6 +161,49 @@ function initMagneticButtons(){
       btn.style.transform = '';
     });
   });
+}
+
+/* ============================================================
+   CARD TILT EFFECT (Premium Micro-interaction)
+   ============================================================ */
+function initCardTilt(){
+  const cards = document.querySelectorAll('.pillar, .card, .testi-card');
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  if(isTouchDevice) return;
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -2;
+      const rotateY = ((x - centerX) / centerX) * 2;
+
+      card.style.transform = `translateY(-8px) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+}
+
+/* ============================================================
+   HERO PARALLAX SUBTLE
+   ============================================================ */
+function initHeroParallax(){
+  const hero = document.querySelector('.hero');
+  const heroBg = document.querySelector('.hero-bg');
+  if(!hero || !heroBg) return;
+
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    if(scrolled < window.innerHeight){
+      heroBg.style.transform = `scale(1.08) translateY(${scrolled * 0.15}px)`;
+    }
+  }, { passive: true });
 }
 
 /* ============================================================
@@ -599,7 +640,6 @@ function handleSubmit(e){
 
     track.addEventListener('scroll', debounce(onScroll, 100));
 
-    // Pause saat tab tidak aktif
     document.addEventListener('visibilitychange', () => {
       if(document.hidden) stopAutoSlide();
       else if(!prefersReducedMotion) startAutoSlide();
@@ -637,7 +677,7 @@ function handleSubmit(e){
   function getSlideWidth(){
     const first = track.querySelector('.slide-item');
     if(!first) return 0;
-    const gap = 20;
+    const gap = 22;
     return first.offsetWidth + gap;
   }
 
@@ -746,4 +786,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initMagneticButtons();
   updateScrollProgress();
+  initCardTilt();
+  initHeroParallax();
 });
